@@ -1,5 +1,6 @@
 import faiss
 from fastapi import FastAPI
+from fastapi.responses import RedirectResponse
 import numpy as np
 import pandas as pd
 import torch
@@ -32,6 +33,11 @@ tokenizer = BertTokenizer.from_pretrained("allenai/scibert_scivocab_uncased")
 
 default_sentence = "Named Entity Recognition (NER) is a fundamental task in the fields of natural language processing and information extraction."
 default_top_k = 10
+
+
+@app.get("/")
+async def redirect():
+    return RedirectResponse("/docs")
 
 @app.post("/search")
 async def find_the_most_similar_sentences(text: str = default_sentence, top_k: int = default_top_k):
