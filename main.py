@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 import torch
 from transformers import BertTokenizer, BertModel
+import uvicorn
 
 app = FastAPI(
     title="AASC Sentence Search",
@@ -11,8 +12,10 @@ app = FastAPI(
 )
 
 # embeddings preparation
+print("loading embeddings...")
 npz = np.load('./data/AASC_embeddings.npz')
 embeddings = npz["arr_0"]
+print(f"loaded, number of sentences: {embeddings.shape[0]}")
 D = embeddings.shape[1]
 faiss.normalize_L2(embeddings)
 
@@ -47,3 +50,6 @@ async def find_the_most_similar_sentences(text: str = default_sentence, top_k: i
             res.append({"id": df.at[i, 1][1:-4], "text": df.at[i, 0][1:-1]})
 
         return res
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8000)
